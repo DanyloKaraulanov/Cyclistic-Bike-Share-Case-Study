@@ -95,6 +95,10 @@ Finding: Annual members generate nearly all revenue.
 
 ## Tableau Dashboard
 
+[Estimated Revenue by Rider Type](https://public.tableau.com/views/EstimatedRevenuebyRiderType/Sheet1?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+
+[Trip Distribution by User Type and Time of Day (2019-2020)](https://public.tableau.com/views/TripDistributionbyUserTypeandTimeofDay2019-2020/Sheet2?:language=en-GB&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link)
+
 ---
 
 ## SQL Examples
