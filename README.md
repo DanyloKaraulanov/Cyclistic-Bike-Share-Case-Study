@@ -58,7 +58,7 @@ The project was conducted as part of **data analytics case study** and demonstra
 
 ### Trip Length Distribution
 - Members: the largest number of trips are short ones **(5-15 minutes)**.
-- Casual riders: the largerst number of trips shifted between **15-30 minutes in 2019** to **30-60 minutes in 2020**, possibly reflecting changing tourism/commuting dynamics.
+- Casual riders: the largest number of trips shifted between **15-30 minutes in 2019** to **30-60 minutes in 2020**, possibly reflecting changing tourism/commuting dynamics.
 
 ### Estimated Revenue Analysis
 - Members generated **~150× more revenue** than casual riders across both years.
@@ -75,3 +75,108 @@ The project was conducted as part of **data analytics case study** and demonstra
 ---
 
 ## Sample Visuals 
+![average_ride_duration_on_weekdays](https://github.com/DanyloKaraulanov/Cyclistic-Bike-Share-Case-Study/blob/8aa470662580ce58fb663f67016cf513c694e5cd/r_images/Average%20duration%20on%20weekdays.png)
+
+Finding: Casual riders take significantly longer trips than members. 
+
+---
+
+![trip_distribution_by_user_type_and_time_of_day](https://github.com/DanyloKaraulanov/Cyclistic-Bike-Share-Case-Study/blob/8aa470662580ce58fb663f67016cf513c694e5cd/tableau_visualizations/trip_duration_by_user_type_and_time_of_day.png) 
+
+Finding: Afternoons are peak usage for both groups, with members also spiking in mornings.
+
+---
+
+![estimated_revenue_by_rider_type](https://github.com/DanyloKaraulanov/Cyclistic-Bike-Share-Case-Study/blob/8aa470662580ce58fb663f67016cf513c694e5cd/tableau_visualizations/estimated_revenue_by_rider_type.png)
+
+Finding: Annual members generate nearly all revenue.
+
+---
+
+## Tableau Dashboard
+
+---
+
+## SQL Examples
+
+```sql
+-- Time of day clasification
+SELECT 
+CASE 
+WHEN HOUR (start_time) BETWEEN 6 and 11 THEN 'Morning'
+WHEN HOUR (start_time) BETWEEN 12 and 17 THEN 'Afternoon'
+WHEN HOUR (start_time) BETWEEN 18 and 22 THEN 'Evening'
+ELSE 'Night'
+END AS time_of_day,
+ CASE 
+        WHEN user_type = 'Subscriber' THEN 'Member'
+        WHEN user_type = 'Customer' THEN 'Casual'
+    END AS user_type,
+    COUNT(*) AS trips
+    FROM trips_2019
+    GROUP BY time_of_day, user_type
+    ORDER BY time_of_day, user_type;
+```
+```sql
+-- Comparison weekend vs weekday usage
+SELECT  
+    CASE 
+        WHEN member_casual = 'member' THEN 'Member'
+        WHEN member_casual = 'casual' THEN 'Casual'
+    END AS user_type,
+    CASE 
+        WHEN DAYOFWEEK(started_at) IN (1, 7) THEN 'Weekend'
+        ELSE 'Weekday'
+    END AS day_type,
+    COUNT(*) AS trips
+FROM trips_2020
+GROUP BY day_type, user_type
+ORDER BY day_type, user_type;
+```
+---
+
+## R Examples 
+```r
+# Descriptive analysis on ride_length
+mean(all_trips_v2$ride_length)
+median(all_trips_v2$ride_length)
+max(all_trips_v2$ride_length)
+min(all_trips_v2$ride_length)
+```
+```r
+# Compare members and casual users
+aggregate(all_trips_v2$ride_length ~ all_trips_v2$member_casual, FUN = mean)
+aggregate(all_trips_v2$ride_length ~ all_trips_v2$member_casual, FUN = median)
+aggregate(all_trips_v2$ride_length ~ all_trips_v2$member_casual, FUN = max)
+aggregate(all_trips_v2$ride_length ~ all_trips_v2$member_casual, FUN = min)
+```
+```r
+# Visualization for average duration
+all_trips_v2 %>% 
+  mutate(weekday = wday(started_at, label = TRUE)) %>% 
+  group_by(member_casual, weekday) %>% 
+  summarise(number_of_rides = n()
+            ,average_duration = mean(ride_length)) %>% 
+  arrange(member_casual, weekday)  %>% 
+  ggplot(aes(x = weekday, y = average_duration, fill = member_casual)) +
+  geom_col(position = "dodge")
+```
+
+---
+
+## Recommendations
+1. **Introduce Tourist Packages**: Weekly/monthly passes tailored to visitors with easy upgrade paths to full membership.
+2. **Corporate Membership Programs**:
+Partner with employers to provide subsidized memberships as commuting benefits.
+3. **Seasonal Campaigns**: Offer discounted memberships in spring/summer when rideship peaks.
+4. **Gamification & Loyalty Rewards**: Points, badgets, and free rides for frequent users to encourage retention.
+
+---
+
+## Reflection
+This project illustrates how **data-driven insights** can guide business strategy. 
+* **Strengths**:
+  * Multi-tool approach (Google Sheets, SQL, R, Tableau) provided deep, layered insights.
+  * Clear link between data analysis and business recommendations.
+* **Limitations**:
+  * No unique user ID → some assumptions required (distinct trips approximated users).
